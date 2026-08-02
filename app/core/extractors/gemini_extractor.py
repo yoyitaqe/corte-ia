@@ -4,6 +4,7 @@ from datetime import datetime
 from dotenv import load_dotenv
 from google import genai
 from google.genai import types
+from app.core.enrichers.ubigeo_enricher import enriquecer_con_ubigeo
 
 load_dotenv()
 api_key = os.getenv("GEMINI_API_KEY")
@@ -34,7 +35,8 @@ Instrucciones para cada campo:
 def extraer_datos_imagen(imagen_bytes, nombre_archivo="desconocido"):
     """
     Recibe los bytes de una imagen y devuelve un diccionario
-    con los datos del corte de luz extraídos por Gemini.
+    con los datos del corte de luz extraídos por Gemini,
+    ya enriquecidos con distrito/provincia/departamento si faltaban.
     """
     try:
         respuesta = client.models.generate_content(
@@ -60,6 +62,8 @@ def extraer_datos_imagen(imagen_bytes, nombre_archivo="desconocido"):
             datos["duracion_horas"] = None
             datos["CP>2"] = "No se pudo calcular"
 
+        datos = enriquecer_con_ubigeo(datos)
+
         datos["archivo_origen"] = nombre_archivo
         return datos
 
@@ -70,5 +74,6 @@ def extraer_datos_imagen(imagen_bytes, nombre_archivo="desconocido"):
             "departamento": "", "provincia": "", "distrito": "",
             "referencia": f"Error al procesar: {str(e)}",
             "duracion_horas": None, "CP>2": "",
+            "distrito_fuente": "",
             "archivo_origen": nombre_archivo
         }
