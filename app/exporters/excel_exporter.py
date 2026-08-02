@@ -23,9 +23,6 @@ def generar_excel(datos, ruta_salida="data/salida_cortes.xlsx"):
         "distrito": "Distrito",
         "referencia": "Referencia",
         "duracion_horas": "Duración (h)",
-        "CP>2": "CP>2"
+        "CP>2": "CP>2",
+        "archivo_origen": "Archivo"
     })
-
-    # Guardar como archivo Excel
-    tabla.to_excel(ruta_salida, index=False)
-    print(f"Excel generado correctamente en: {ruta_salida}")
